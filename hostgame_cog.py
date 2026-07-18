@@ -1,4 +1,5 @@
 import discord
+print("HOSTGAME COG VERSION JULY18")
 from discord.ext import commands
 from discord import app_commands
 import random
