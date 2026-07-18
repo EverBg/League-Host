@@ -1,10 +1,7 @@
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 import os
 import asyncio
-
-load_dotenv()
 
 intents = discord.Intents.default()
 intents.members = True
