@@ -367,7 +367,7 @@ class HostGame(commands.Cog):
 async def setup(bot):
     await bot.add_cog(HostGame(bot))
 
-```python
+# ---------------/add---------------
 @app_commands.command(name="add", description="Add a member to the game if there's still room.")
 @app_commands.describe(player="The member to add to the game")
 async def add(self, interaction: discord.Interaction, player: discord.Member):
@@ -421,10 +421,9 @@ async def add(self, interaction: discord.Interaction, player: discord.Member):
 
             await thread.send(
                 embed=discord.Embed(
-                    description="✅ This game is now full.",
+                    description="This game is now full.",
                     color=EMBED_COLOR,
                 )
             )
 
     await interaction.response.send_message(f"Added {player.mention} to the game.", ephemeral=True)
-```
