@@ -364,9 +364,12 @@ class HostGame(commands.Cog):
         await thread.send(embed=embed)
         await interaction.response.send_message(f"Removed {player.mention} from the game.", ephemeral=True)
 
-
 async def setup(bot):
-    # ---------------/add---------------
+
+
+
+
+  # ---------------/add---------------
     @app_commands.command(name="add", description="Add a member to the game if there's still room.")
     @app_commands.describe(player="The member to add to the game")
     async def add(self, interaction: discord.Interaction, player: discord.Member):
@@ -398,7 +401,6 @@ async def setup(bot):
             return
 
         remove_player(gameid, player.id)
-        add_player(gameid, {"id": player.id, "display_name": player.display_name})
         game = get_game(gameid)
 
         thread = await get_thread(interaction, game)
@@ -414,7 +416,7 @@ async def setup(bot):
 
         if len(game.get("players", [])) >= players_needed:
             games = load_games()
-            if gameid in games and not games[gameid]["finished"]:
+            if gameid in games and not games[gameid].get("finished"):
                 games[gameid]["finished"] = True
                 games[gameid]["locked"] = True
                 save_games(games)
@@ -427,3 +429,7 @@ async def setup(bot):
                 )
 
         await interaction.response.send_message(f"Added {player.mention} to the game.", ephemeral=True)
+
+
+async def setup(bot):
+    await bot.add_cog(HostGame(bot))
