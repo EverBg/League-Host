@@ -23,7 +23,6 @@ from games import (
     load_games,
     save_games,
     remove_player,
-    add_player,
 )
 
 PLAYERS_NEEDED = {
@@ -365,71 +364,3 @@ class HostGame(commands.Cog):
         await interaction.response.send_message(f"Removed {player.mention} from the game.", ephemeral=True)
 
 async def setup(bot):
-
-
-
-
-  # ---------------/add---------------
-    @app_commands.command(name="add", description="Add a member to the game if there's still room.")
-    @app_commands.describe(player="The member to add to the game")
-    async def add(self, interaction: discord.Interaction, player: discord.Member):
-        gameid, game = resolve_game(interaction)
-
-        if not game:
-            await interaction.response.send_message(
-                "This command only works inside a game's thread.", ephemeral=True
-            )
-            return
-
-        if game.get("finished"):
-            await interaction.response.send_message("This game has already ended.", ephemeral=True)
-            return
-
-        if not is_host_or_staff(interaction, game):
-            await interaction.response.send_message("Only the host can add players.", ephemeral=True)
-            return
-
-        if any(p["id"] == player.id for p in game.get("players", [])):
-            await interaction.response.send_message(f"{player.mention} is already in this game.", ephemeral=True)
-            return
-
-        players_needed = game.get("players_needed", 0)
-        current_players = len(game.get("players", []))
-
-        if current_players >= players_needed:
-            await interaction.response.send_message("This game is already full.", ephemeral=True)
-            return
-
-        remove_player(gameid, player.id)
-        game = get_game(gameid)
-
-        thread = await get_thread(interaction, game)
-        await thread.add_user(player)
-
-        await thread.send(
-            embed=discord.Embed(
-                title="Player Added",
-                description=f"{player.mention} was added to the game by {interaction.user.mention}.",
-                color=EMBED_COLOR,
-            )
-        )
-
-        if len(game.get("players", [])) >= players_needed:
-            games = load_games()
-            if gameid in games and not games[gameid].get("finished"):
-                games[gameid]["finished"] = True
-                games[gameid]["locked"] = True
-                save_games(games)
-
-                await thread.send(
-                    embed=discord.Embed(
-                        description="This game is now full.",
-                        color=EMBED_COLOR,
-                    )
-                )
-
-        await interaction.response.send_message(f"Added {player.mention} to the game.", ephemeral=True)
-
-
-async def setup(bot):
-    await bot.add_cog(HostGame(bot))
